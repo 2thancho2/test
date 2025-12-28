@@ -159,7 +159,7 @@ function resetForm(){
 
 // ------------------- Discord Webhook -------------------
 function sendDiscordWebhook(message){
-    const webhookURL = "process.env.DISCORD_BOT_URL"; // 발급받은 Webhook URL 넣기
+    const webhookURL = DISCORD_BOT_URL; // 발급받은 Webhook URL 넣기
     fetch(webhookURL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
