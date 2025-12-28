@@ -159,17 +159,13 @@ function resetForm(){
 
 // ------------------- Discord Webhook -------------------
 function sendDiscordWebhook(message){
-    const webhookURL = DISCORD_BOT_URL; // 발급받은 Webhook URL 넣기
-    fetch(webhookURL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: message })
-    })
-    .then(response => {
-        if(!response.ok) console.error("Discord Webhook 전송 실패");
-    })
-    .catch(err => console.error(err));
+  fetch("/.netlify/functions/discord", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message })
+  });
 }
+
 
 // ------------------- 이벤트 -------------------
 
