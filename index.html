@@ -46,7 +46,6 @@ input, button {
     border: none;
     cursor: default;
     padding: 0;
-    text-decoration: none;
 }
 #resetButton:hover { color: #4CAF50; }
 .button-container { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
@@ -71,10 +70,10 @@ input, button {
 <div class="container hidden" id="reservationScreen">
     <p>예약 시간을 선택하세요.</p>
     <div class="button-container">
-        <button class="btn" id="part1">1부</button>
-        <button class="btn" id="part2">2부</button>
-        <button class="btn" id="part3">3부</button>
-        <button class="btn" id="part4">4부</button>
+        <button class="btn">1부</button>
+        <button class="btn">2부</button>
+        <button class="btn">3부</button>
+        <button class="btn">4부</button>
     </div>
 </div>
 
@@ -92,12 +91,12 @@ let selectedActivity = '';
 let selectedTime = '';
 let studentId = '';
 
-// ------------------- 학번 유효성 검사 -------------------
+// 학번 검사
 function isValidStudentId(id){
     return /^[1-3]\d{4}$/.test(id);
 }
 
-// ------------------- 방문 기록 체크 -------------------
+// 방문 기록
 function hasVisited(studentId){
     const visited = JSON.parse(localStorage.getItem('visitedStudents')) || [];
     return visited.includes(studentId);
@@ -109,147 +108,99 @@ function recordVisit(studentId){
     localStorage.setItem('visitedStudents', JSON.stringify(visited));
 }
 
-// ------------------- 예약 인원 관리 -------------------
+// 인원 관리
 function getCount(key){
     return Number(localStorage.getItem(key)) || 0;
 }
 
 function addCount(key){
-    let count = getCount(key);
-    count++;
-    localStorage.setItem(key,count);
+    localStorage.setItem(key, getCount(key) + 1);
 }
 
-// ------------------- 잔여인원 표시 -------------------
+// 잔여 인원 표시
 function updateRemain(){
     let html = '<strong>PC방:</strong> ';
     for(let i=1;i<=4;i++){
-        let remain = pcLimit - getCount('pcCount_'+i);
-        html += `${i}부:${remain}명 `;
+        html += `${i}부:${pcLimit - getCount('pcCount_'+i)}명 `;
     }
     html += '<br><strong>자동차:</strong> ';
     for(let i=1;i<=4;i++){
-        let remain = carLimit - getCount('carCount_'+i);
-        html += `${i}부:${remain}명 `;
+        html += `${i}부:${carLimit - getCount('carCount_'+i)}명 `;
     }
     document.getElementById('remain').innerHTML = html;
 }
 
-// ------------------- 화면 전환 -------------------
+// 화면 전환
 function goToReservationScreen(){
-    document.getElementById('mainScreen').classList.add('hidden');
-    document.getElementById('reservationScreen').classList.remove('hidden');
+    mainScreen.classList.add('hidden');
+    reservationScreen.classList.remove('hidden');
     updateRemain();
 }
 
 function goToConfirmationScreen(){
-    document.getElementById('reservationScreen').classList.add('hidden');
-    document.getElementById('confirmationScreen').classList.remove('hidden');
-    document.getElementById('confirmationMessage').textContent =
-        `${studentId}님, ${selectedActivity} 예약\n시간: ${selectedTime}`;
+    reservationScreen.classList.add('hidden');
+    confirmationScreen.classList.remove('hidden');
+    confirmationMessage.textContent =
+        `${studentId}님, ${selectedActivity} 예약 / ${selectedTime}`;
 }
 
-// ------------------- 초기화 -------------------
-function resetForm(){
-    document.getElementById('studentId').value = '';
-    document.getElementById('message').textContent = '';
-    selectedActivity = '';
-    selectedTime = '';
-}
-
-// ------------------- Discord Webhook -------------------
+// 🔥 Netlify Function 호출 (2단계 핵심)
 function sendDiscordWebhook(message){
-    const webhookURL = DISCORD_BOT_URL; // 발급받은 Webhook URL 넣기
-    fetch(webhookURL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: message })
-    })
-    .then(response => {
-        if(!response.ok) console.error("Discord Webhook 전송 실패");
-    })
-    .catch(err => console.error(err));
+    fetch("/.netlify/functions/discord", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+    }).catch(err => console.error(err));
 }
 
-// ------------------- 이벤트 -------------------
-
-// 활동 선택 버튼
-document.getElementById('visitButton').addEventListener('click',function(){
-    studentId = document.getElementById('studentId').value.trim();
-    if(!studentId || !isValidStudentId(studentId)){
-        document.getElementById('message').textContent="유효하지 않은 학번입니다!";
-        document.getElementById('message').style.color='red';
-        return;
-    }
-    if(hasVisited(studentId)){
-        document.getElementById('message').textContent="이미 예약한 학생입니다!";
-        document.getElementById('message').style.color='red';
+// 이벤트
+visitButton.onclick = () => {
+    studentId = studentIdInput.value.trim();
+    if(!isValidStudentId(studentId) || hasVisited(studentId)){
+        message.textContent = "유효하지 않거나 이미 예약됨";
+        message.style.color = "red";
         return;
     }
     selectedActivity = 'PC방';
     goToReservationScreen();
-});
+};
 
-document.getElementById('carCodingButton').addEventListener('click',function(){
-    studentId = document.getElementById('studentId').value.trim();
-    if(!studentId || !isValidStudentId(studentId)){
-        document.getElementById('message').textContent="유효하지 않은 학번입니다!";
-        document.getElementById('message').style.color='red';
+carCodingButton.onclick = () => {
+    studentId = studentIdInput.value.trim();
+    if(!isValidStudentId(studentId) || hasVisited(studentId)){
+        message.textContent = "유효하지 않거나 이미 예약됨";
+        message.style.color = "red";
         return;
     }
     selectedActivity = '자동차 코딩';
     goToReservationScreen();
-});
+};
 
-// 시간 선택
-document.querySelectorAll('#reservationScreen .btn').forEach(button=>{
-    button.addEventListener('click',function(){
-        selectedTime = button.textContent;
-        let key = '';
-        if(selectedActivity==='PC방') key = 'pcCount_'+selectedTime.charAt(0);
-        else key = 'carCount_'+selectedTime.charAt(0);
-        let limit = selectedActivity==='PC방'? pcLimit : carLimit;
-        if(getCount(key)>=limit){
-            alert("이미 마감된 부입니다.");
-            return;
-        }
+document.querySelectorAll('#reservationScreen .btn').forEach(btn=>{
+    btn.onclick = () => {
+        selectedTime = btn.textContent;
         goToConfirmationScreen();
-    });
+    };
 });
 
-// 최종 확인
-document.getElementById('confirmButton').addEventListener('click',function(){
-    let key = selectedActivity==='PC방'? 'pcCount_'+selectedTime.charAt(0) : 'carCount_'+selectedTime.charAt(0);
+confirmButton.onclick = () => {
+    const key = (selectedActivity === 'PC방' ? 'pcCount_' : 'carCount_') + selectedTime[0];
     addCount(key);
-    if(selectedActivity==='PC방') recordVisit(studentId);
+    recordVisit(studentId);
 
-    // Discord 알람
-    sendDiscordWebhook(`**${studentId}**님이 **${selectedActivity}**를 ${selectedTime}에 예약했습니다!`);
+    sendDiscordWebhook(
+        `📢 **${studentId}**님이 **${selectedActivity}** ${selectedTime} 예약`
+    );
 
     alert("예약 완료!");
-    document.getElementById('confirmationScreen').classList.add('hidden');
-    document.getElementById('mainScreen').classList.remove('hidden');
-    resetForm();
-    updateRemain();
-});
+    location.reload();
+};
 
-// 취소
-document.getElementById('cancelButton').addEventListener('click',function(){
-    document.getElementById('confirmationScreen').classList.add('hidden');
-    document.getElementById('reservationScreen').classList.remove('hidden');
-});
+cancelButton.onclick = () => {
+    confirmationScreen.classList.add('hidden');
+    reservationScreen.classList.remove('hidden');
+};
 
-// 초기화 버튼
-document.getElementById('resetButton').addEventListener('click',function(){
-    let pwd = prompt("비밀번호를 입력하세요:");
-    if(pwd==='admin123'){
-        localStorage.clear();
-        alert("모든 예약 기록 초기화 완료!");
-        updateRemain();
-    }else alert("비밀번호가 틀렸습니다.");
-});
-
-// 초기 로드 시 잔여인원 표시
 updateRemain();
 </script>
 
