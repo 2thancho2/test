@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>기초부터 실력까지</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- 중앙 타이핑 -->
+  <div class="typing show">
+    <div class="line">
+      <span id="basic"></span><span class="cursor" id="cursor-basic">|</span>
+      <span class="suffix">부터</span>
+    </div>
+    <div class="line">
+      <span id="skill"></span><span class="cursor" id="cursor-skill">|</span>
+      <span class="suffix">까지</span>
+    </div>
+  </div>
+
+  <!-- 스크롤 공간 -->
+  <div class="spacer"></div>
+
+  <!-- 중간 설명 텍스트 영역 (문단별 애니메이션) -->
+  <div class="text-section">
+    <p class="text-item scroll-animate">
+      저희는 기초 개념부터 시작해<br />
+      실제로 써먹을 수 있는 실력까지<br />
+      쉽게 함께 만들어갑니다.
+    </p>
+
+    <p class="text-item scroll-animate">
+      저희는 매주 또는 격주<br />
+      화요일 또는 목요일 점심시간에 컴퓨터실에서 진행합니다<br />
+      (시험주간 2주 전 제외)
+    </p>
+
+    <p class="text-item scroll-animate">
+      저희는 동아리 생활기록부 작성을 위해<br />
+      매 동아리 시간마다 사진을 촬영하고 있습니다
+    </p>
+  </div>
+
+  <!-- 체크박스 -->
+  <div class="check-section scroll-animate">
+    <label>
+      <input type="checkbox" id="agreeCheck" />
+      개인정보 이용 (사진 촬영, 이름) 동의
+    </label>
+  </div>
+
+  <!-- 링크 박스 -->
+  <div class="link-box" id="linkBox">
+    <a href="https://apple.com" target="_blank">
+      동아리 신청하러가기 →
+    </a>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

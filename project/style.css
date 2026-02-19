@@ -1,0 +1,134 @@
+@font-face {
+  font-family: 'pret';
+  src: url('./PretendardVariable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+
+/* ===== 기본 ===== */
+body {
+    font: pret;
+  min-height: 100vh;
+  margin: 0;
+  background: #fff;
+  font-family: 'pret';
+}
+
+/* 스크롤용 공간 */
+.spacer {
+  height: 120vh;
+}
+
+/* ===== 타이핑 ===== */
+.typing {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  font-size: 64px;
+  line-height: 1.2;
+  text-align: center;
+
+  opacity: 0;
+  transition: all 0.8s ease;
+  z-index: 10;
+}
+
+.typing.show {
+  opacity: 1;
+}
+
+/* 스크롤 시 사라짐 */
+.typing.hide {
+  opacity: 0;
+  transform: translate(-50%, -60%);
+}
+
+.line {
+  display: block;
+}
+
+#basic {
+  color: #4facfe;
+  font-weight: 700;
+}
+
+#skill {
+  color: #43e97b;
+  font-weight: 800;
+}
+
+.suffix {
+  color: #111;
+  margin-left: 6px;
+}
+
+/* 커서 */
+.cursor {
+  margin-left: 2px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* ===== 중간 설명 글 ===== */
+.text-section {
+  max-width: 720px;
+  margin: 0 auto 100px;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.text-item {
+  font-size: 22px;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 48px;
+
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.6s ease;
+}
+
+.text-item.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== 체크박스 ===== */
+.check-section {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.6s ease;
+
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 40px;
+}
+
+.check-section.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== 링크 박스 ===== */
+.link-box {
+  display: none;
+  margin: 20px auto 120px;
+  width: fit-content;
+
+  padding: 16px 24px;
+  border-radius: 12px;
+  background: #111;
+}
+
+.link-box a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+}
